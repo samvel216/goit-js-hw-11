@@ -1,24 +1,32 @@
 import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
 import 'simplelightbox/dist/simple-lightbox.min.css';
-const formButtonEl = document.querySelector(".form-button");
 const searchInputEl = document.querySelector(".search-input");
 const galleryEl = document.querySelector(".gallery");
 const loadButtonEl = document.querySelector(".load-button");
-console.log(formButtonEl);
-console.log(searchInputEl);
-console.log(galleryEl);
-console.log(galleryEl)
+const searchFormEl = document.querySelector(".search-form");
+const loadFormEl = document.querySelector(".load-form");
+const containerEl = document.querySelector(".container");
+const endlessScrollEl = document.querySelector(".endless-scroll");
 let page = 1;
 let per_page = 40;
 let hoorayEl = 1;
 let totalHits;
+const scrollBuild = () => {
+  const { height: cardHeight } = document
+  .querySelector('.gallery')
+  .firstElementChild.getBoundingClientRect();
 
+window.scrollBy({
+  top: cardHeight * 2,
+  behavior: 'smooth',
+});
+}
 galleryEl.addEventListener('click', (event) => {
   event.preventDefault();
   let gallery = new SimpleLightbox('.gallery a', { "captionDelay": 250 });
 })
-formButtonEl.addEventListener("click", (event) => {
+searchFormEl.addEventListener("submit", (event) => {
     event.preventDefault();
     if (hoorayEl > 1) {
       Notiflix.Notify.info(`Hooray! We found ${totalHits} images.`);
@@ -29,6 +37,7 @@ formButtonEl.addEventListener("click", (event) => {
     fetchTrueFalce();
     hoorayEl += 1;
 })
+
 const fetchFunk = async (name) => {
     const fetchAnswer = await fetch(`https://pixabay.com/api/?key=25829812-d39cfe0a6889efb95d5c21ab8&q=${name}
     &image_type=photo&orientation=horizontal&safesearch=true&totalHits&webformatURL&largeImageURL&page=${page}&per_page=${per_page}`);
@@ -42,9 +51,9 @@ const fetchFunk = async (name) => {
 const fetchTrueFalce = async () => {
     try {
         const lalka = await fetchFunk(searchInputEl.value);
-        console.log(lalka.totalHits);
         innerFunk(lalka); 
-        loadButtonEl.style.display = "block";    
+        loadButtonEl.style.display = "block";   
+        scrollBuild(); 
     }  catch (error) {
       console.log(error);
       loadButtonEl.style.display = "none";
@@ -77,16 +86,26 @@ const innerFunk = (array) => {
   </a>
 </div>
     `).join("");
-    galleryEl.insertAdjacentHTML("beforeend", markup);
+    galleryEl.insertAdjacentHTML("beforeend", markup); 
 }
-loadButtonEl.addEventListener('click', (event) => {
+let checkButton = 1;
+loadFormEl.addEventListener('submit', (event) => {
   event.preventDefault();
   page += 1;
+  checkButton += 1;
   fetchTrueFalce();
 })
-
-window.addEventListener('scroll', function() {
-  if (document.body.scrollHeight - window.pageYOffset < window.innerHeight) {
-    fetchTrueFalce();   
+endlessScrollEl.addEventListener('click', (event) => {
+  event.preventDefault(); 
+  console.log(containerEl.style.height);
+  if (checkButton > 1) {
+ 
+    window.addEventListener('scroll', function() {
+      if (document.body.scrollHeight - window.pageYOffset < window.innerHeight) {
+        fetchTrueFalce();   
+      }
+    });
+  } else {
+    Notiflix.Notify.info(`Сначала попробуйте обычную кнопку.`);
   }
-});
+})

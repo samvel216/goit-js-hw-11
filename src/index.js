@@ -12,6 +12,7 @@ let page = 1;
 let per_page = 40;
 let hoorayEl = 1;
 let totalHits;
+let bool;
 const scrollBuild = () => {
   const { height: cardHeight } = document
   .querySelector('.gallery')
@@ -54,6 +55,10 @@ const fetchTrueFalce = async () => {
         innerFunk(lalka); 
         loadButtonEl.style.display = "block";   
         scrollBuild(); 
+        bool = Math.ceil(totalHits / per_page);
+        if (page === bool) {
+          loadButtonEl.style.display = "none";
+         }
     }  catch (error) {
       console.log(error);
       loadButtonEl.style.display = "none";
@@ -90,7 +95,7 @@ const innerFunk = (array) => {
 }
 let checkButton = 1;
 loadFormEl.addEventListener('submit', (event) => {
-  event.preventDefault();
+  event.preventDefault(); 
   page += 1;
   checkButton += 1;
   fetchTrueFalce();
